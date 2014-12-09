@@ -6,7 +6,7 @@ var split = require('split')
 var xtend = require('xtend')
 var combine = require('stream-combiner')
 
-function createGetTextStream () {
+function createDuplexStream () {
   //console.log('getText', filename)
 
   var lineNum = 0
@@ -43,12 +43,30 @@ function createGetTextStream () {
   )
 }
 
-module.exports = createGetTextStream
+module.exports = createDuplexStream
+
+module.exports.createReadStream = function (files, opts) {
+  if (!Array.isArray(files)) files = [files]
+
+  var index = 0
+  var readable = new Readable()
+
+  readable._read = function () {
+    var push = true
+
+    while (push && index < files.length) {
+      push = this.push(files[index])
+      index++
+    }
+
+    this.push(null)
+  }
+
+  return readable.pipe(createFileDuplexStream(opts))
+}
 
 function getText (filename) {
-  return fs.createReadStream(filename)
-    .pipe(split())
-    .pipe(createGetTextStream())
+  return fs.createReadStream(filename).pipe(createDuplexStream())
 }
 
 var READDIRP_DEFAULTS = {
@@ -56,7 +74,7 @@ var READDIRP_DEFAULTS = {
   directoryFilter: ['!.*', '!node_modules', '!coverage']
 }
 
-module.exports = function (opts) {
+function createFileDuplexStream (opts) {
   opts = opts || {}
   opts.readdirp = opts.readdirp || {}
 
