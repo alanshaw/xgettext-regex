@@ -1,4 +1,5 @@
 var fs = require('fs')
+var Readable = require('stream').Readable
 var through = require('through2')
 var readdirp = require('readdirp')
 var once = require('once')
@@ -6,11 +7,15 @@ var split = require('split')
 var xtend = require('xtend')
 var combine = require('stream-combiner')
 
-function createDuplexStream () {
+function createDuplexStream (filename, opts) {
+  filename = filename || ''
+  opts = opts || {}
+  // Thanks!
+  // http://blog.stevenlevithan.com/archives/match-quoted-string
+  opts.regex = opts.regex || /_\(((["'])(?:(?=(\\?))\3.)*?\2)\)/g
   //console.log('getText', filename)
 
   var lineNum = 0
-  var getTextRegex = /_\('(.+?)'\)/g
 
   return combine(
     split(),
@@ -21,7 +26,8 @@ function createDuplexStream () {
       var matches
       var first = true
 
-      while ((matches = getTextRegex.exec(line)) !== null) {
+      while ((matches = opts.regex.exec(line)) !== null) {
+        //console.log(matches)
         var entry = ''
 
         if (first) {
@@ -29,15 +35,14 @@ function createDuplexStream () {
           first = false
         }
 
-        var str = matches[1].replace('"', '\\"')
-
-        entry += 'msgid "' + str + '"\n'
-        entry += 'msgstr "' + str + '"\n\n'
+        entry += 'msgid ' + matches[1] + '\n'
+        entry += 'msgstr ' + matches[1] + '\n\n'
 
         this.push(entry)
       }
 
       lineNum++
+      opts.regex.lastIndex = 0
       cb()
     })
   )
@@ -65,11 +70,11 @@ module.exports.createReadStream = function (files, opts) {
   return readable.pipe(createFileDuplexStream(opts))
 }
 
-function getText (filename) {
-  return fs.createReadStream(filename).pipe(createDuplexStream())
+function getText (filename, opts) {
+  return fs.createReadStream(filename).pipe(createDuplexStream(filename, opts))
 }
 
-var READDIRP_DEFAULTS = {
+var READDIRP_OPTS = {
   fileFilter: ['!.*', '!*.png', '!*.jpg', '!*.gif', , '!*.zip', , '!*.gz'],
   directoryFilter: ['!.*', '!node_modules', '!coverage']
 }
@@ -85,7 +90,7 @@ function createFileDuplexStream (opts) {
 
     fs.stat(filename, function (er, stats) {
       if (stats.isFile()) {
-        getText(filename)
+        getText(filename, opts)
           .on('data', function (entry) {self.push(entry)})
           .on('error', function (er) {
             console.error('File getText error', filename, er)
@@ -100,13 +105,13 @@ function createFileDuplexStream (opts) {
         var complete = 0
         var readdirpComplete = false
 
-        readdirp(xtend(READDIRP_DEFAULTS, opts.readdirp, {root: filename}))
+        readdirp(xtend(READDIRP_OPTS, opts.readdirp, {root: filename}))
           .on('data', function (entry) {
             //console.log('Got entry', entry.fullPath)
 
             total++
 
-            getText(entry.fullPath)
+            getText(entry.fullPath, opts)
               .on('data', function (entry) {self.push(entry)})
               .on('error', function (er) {
                 console.error('Directory getText error', entry.fullPath, er)
