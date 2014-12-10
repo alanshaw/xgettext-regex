@@ -1,0 +1,11 @@
+Usage: xgettext-regex [files] {OPTIONS}
+
+Standard Options:
+
+    --outfile, -o  Write the .pot formatted output to this file.
+                   If unspecified, xgettext-regex prints to stdout.
+
+         --fn, -f  Name of the i18n translation funciton.
+                   Defaults to "_" if unspecified.
+
+       --help, -h  Show this message.
