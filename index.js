@@ -10,10 +10,11 @@ var combine = require('stream-combiner')
 function createDuplexStream (filename, opts) {
   filename = filename || ''
   opts = opts || {}
+  opts.fn = opts.fn || '_'
   // Thanks!
   // http://blog.stevenlevithan.com/archives/match-quoted-string
-  opts.regex = opts.regex || /_\(((["'])(?:(?=(\\?))\3.)*?\2)\)/g
-  //console.log('getText', filename)
+  opts.regex = opts.regex || new RegExp(opts.fn + '\\(((["\'])(?:(?=(\\\\?))\\3.)*?\\2)\\)', 'g')
+  opts.regexTextCaptureIndex = opts.regexTextCaptureIndex || 1
 
   var lineNum = 0
 
@@ -21,13 +22,11 @@ function createDuplexStream (filename, opts) {
     split(),
     through(function (line, enc, cb) {
       line = line.toString()
-      //console.log('Got line', filename, line)
 
       var matches
       var first = true
 
       while ((matches = opts.regex.exec(line)) !== null) {
-        //console.log(matches)
         var entry = ''
 
         if (first) {
@@ -35,8 +34,16 @@ function createDuplexStream (filename, opts) {
           first = false
         }
 
-        entry += 'msgid ' + matches[1] + '\n'
-        entry += 'msgstr ' + matches[1] + '\n\n'
+        var text = matches[opts.regexTextCaptureIndex]
+
+        if (text[0] == "'") {
+          text = text.slice(1, -1)
+          text = text.replace(/\\'/g, "'")
+          text = '"' + text.replace(/"/g, '\\"') + '"'
+        }
+
+        entry += 'msgid ' + text + '\n'
+        entry += 'msgstr ' + text + '\n\n'
 
         this.push(entry)
       }
@@ -67,7 +74,7 @@ module.exports.createReadStream = function (files, opts) {
     this.push(null)
   }
 
-  return readable.pipe(createFileDuplexStream(opts))
+  return readable.pipe(createDuplexFileStream(opts))
 }
 
 function getText (filename, opts) {
@@ -79,7 +86,7 @@ var READDIRP_OPTS = {
   directoryFilter: ['!.*', '!node_modules', '!coverage']
 }
 
-function createFileDuplexStream (opts) {
+function createDuplexFileStream (opts) {
   opts = opts || {}
   opts.readdirp = opts.readdirp || {}
 
@@ -97,7 +104,6 @@ function createFileDuplexStream (opts) {
             cb(er)
           })
           .on('end', function () {
-            //console.log('File getText end', filename)
             cb()
           })
       } else if (stats.isDirectory()) {
@@ -107,8 +113,6 @@ function createFileDuplexStream (opts) {
 
         readdirp(xtend(READDIRP_OPTS, opts.readdirp, {root: filename}))
           .on('data', function (entry) {
-            //console.log('Got entry', entry.fullPath)
-
             total++
 
             getText(entry.fullPath, opts)
@@ -118,7 +122,6 @@ function createFileDuplexStream (opts) {
                 cb(er)
               })
               .on('end', function () {
-                //console.log('Directory getText end', entry.fullPath)
                 complete++
                 if (total == complete && readdirpComplete) cb()
               })
@@ -128,7 +131,6 @@ function createFileDuplexStream (opts) {
             cb(er)
           })
           .on('end', function () {
-            //console.log('Directory end', filename)
             readdirpComplete = true
           })
       }

@@ -35,10 +35,17 @@ xgettext.createReadStream(files, opts))
 ## Options
 
 ```js
-{
+opts = {
+    /* i18n funciton name */
+    fn: '_',
+    /* The regex used to match i18n function calls */
     regex: /_\(((["'])(?:(?=(\\?))\3.)*?\2)\)/g,
+    /* Capture index for the i18n text in the above regex */
+    regexTextCaptureIndex: 1,
+    /* readdirp filters etc. */
     readdirp: {
-        /* readdirp filters etc. */
+      fileFilter: ['!.*', '!*.png', '!*.jpg', '!*.gif', , '!*.zip', , '!*.gz'],
+      directoryFilter: ['!.*', '!node_modules', '!coverage']
     }
 }
 ```
