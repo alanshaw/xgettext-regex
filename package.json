@@ -19,5 +19,20 @@
   },
   "bin": {
     "xgettext-regex": "bin/xgettext-regex.js"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alanshaw/xgettext-regex.git"
+  },
+  "keywords": [
+    "xgettext",
+    "gettext",
+    "i18n",
+    "l18n"
+  ],
+  "bugs": {
+    "url": "https://github.com/alanshaw/xgettext-regex/issues"
+  },
+  "homepage": "https://github.com/alanshaw/xgettext-regex"
 }
