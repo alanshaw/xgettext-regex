@@ -1,4 +1,4 @@
-# xgettext-regex
+# xgettext-regex [![Build Status](https://img.shields.io/travis/alanshaw/xgettext-regex.svg?style=flat)](https://travis-ci.org/alanshaw/xgettext-regex) [![Dependency Status](https://david-dm.org/alanshaw/xgettext-regex.svg?style=flat)](https://david-dm.org/alanshaw/xgettext-regex)
 
 Minimum viable xgettext .pot file generator. Uses a configurable regex to get translation keys.
 
