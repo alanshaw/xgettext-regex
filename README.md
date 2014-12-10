@@ -49,3 +49,13 @@ opts = {
     }
 }
 ```
+
+## PO header
+
+Remember to add a utf8 charset header to the output if you're using non-ASCII characters e.g.
+
+```
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+```
