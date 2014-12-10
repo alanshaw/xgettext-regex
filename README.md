@@ -14,11 +14,13 @@ xgettext-regex app-dir -o app.po # Recursive read directory
 var fs = require('fs')
 var xgettext = require('xgettext-regex')
 
+var src = '/path/to/file'
+var dest = '/path/to/en-GB.po'
 var opts = {}
 
-fs.createReadStream('/path/to/file')
-  .pipe(xgettext(opts))
-  .pipe(fs.createWriteStream('/path/to/en-GB.po'))
+fs.createReadStream(src)
+  .pipe(xgettext(src, opts))
+  .pipe(fs.createWriteStream(dest))
 ```
 
 ```js

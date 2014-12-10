@@ -4,7 +4,7 @@
   "description": "Minimum viable xgettext .po file generator. Uses a configurable regex to get translation keys.",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover node_modules/.bin/tape test.js"
+    "test": "istanbul cover node_modules/.bin/tape test/test.js"
   },
   "author": "Alan Shaw",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "xgettext-regex": "bin/xgettext-regex.js"
   },
   "devDependencies": {
+    "concat-stream": "^1.4.7",
     "istanbul": "^0.3.5",
     "tape": "^3.0.3"
   },

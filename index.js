@@ -1,4 +1,5 @@
 var fs = require('fs')
+var path = require('path')
 var Readable = require('stream').Readable
 var through = require('through2')
 var readdirp = require('readdirp')
@@ -96,6 +97,8 @@ function createDuplexFileStream (opts) {
     cb = once(cb)
 
     fs.stat(filename, function (er, stats) {
+      if (er) return cb(er)
+
       if (stats.isFile()) {
         getText(filename, opts)
           .on('data', function (entry) {self.push(entry)})
