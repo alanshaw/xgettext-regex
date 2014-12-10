@@ -1,6 +1,6 @@
 {
   "name": "xgettext-regex",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "simple xgettext with a regex",
   "main": "index.js",
   "scripts": {
