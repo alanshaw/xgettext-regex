@@ -1,6 +1,6 @@
 # xgettext-regex
 
-Minimum viable xgettext .po file generator. Uses a configurable regex to get translation keys.
+Minimum viable xgettext .pot file generator. Uses a configurable regex to get translation keys.
 
 ## Examples
 
