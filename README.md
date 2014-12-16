@@ -38,7 +38,7 @@ xgettext.createReadStream(files, opts))
 
 ```js
 opts = {
-    /* i18n funciton name */
+    /* i18n function name */
     fn: '_',
     /* The regex used to match i18n function calls */
     regex: /_\(((["'])(?:(?=(\\?))\3.)*?\2)\)/g,
