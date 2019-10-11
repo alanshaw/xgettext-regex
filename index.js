@@ -28,7 +28,7 @@ function createDuplexStream (filename, opts) {
       var first = true
 
       while ((matches = opts.regex.exec(line)) !== null) {
-        var entry = ''
+        var entry = '\n'
 
         if (first) {
           entry += '#: ' + filename + ':' + lineNum + '\n'
@@ -44,7 +44,7 @@ function createDuplexStream (filename, opts) {
         }
 
         entry += 'msgid ' + text + '\n'
-        entry += 'msgstr ' + text + '\n\n'
+        entry += 'msgstr ' + text + '\n'
 
         this.push(entry)
       }
@@ -95,6 +95,11 @@ function createDuplexFileStream (opts) {
     var self = this
     filename = filename.toString()
     cb = once(cb)
+
+    self.push('#, fuzzy\n')
+    self.push('msgid ""\n')
+    self.push('msgstr ""\n')
+    self.push('"Content-Type: text/plain; charset=UTF-8\\n"\n')
 
     fs.stat(filename, function (er, stats) {
       if (er) return cb(er)
