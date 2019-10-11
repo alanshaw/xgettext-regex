@@ -17,7 +17,7 @@ function createDuplexStream (filename, opts) {
   opts.regex = opts.regex || new RegExp(opts.fn + '\\(((["\'])(?:(?=(\\\\?))\\3.)*?\\2)\\)', 'g')
   opts.regexTextCaptureIndex = opts.regexTextCaptureIndex || 1
 
-  var lineNum = 0
+  var lineNum = 1
 
   return combine(
     split(),
