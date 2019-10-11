@@ -1,5 +1,4 @@
 var fs = require('fs')
-var path = require('path')
 var Readable = require('stream').Readable
 var through = require('through2')
 var readdirp = require('readdirp')
@@ -83,7 +82,7 @@ function getText (filename, opts) {
 }
 
 var READDIRP_OPTS = {
-  fileFilter: ['!.*', '!*.png', '!*.jpg', '!*.gif', , '!*.zip', , '!*.gz'],
+  fileFilter: ['!.*', '!*.png', '!*.jpg', '!*.gif', '!*.zip', '!*.gz'],
   directoryFilter: ['!.*', '!node_modules', '!coverage']
 }
 
@@ -119,7 +118,7 @@ function createDuplexFileStream (opts) {
         var complete = 0
         var readdirpComplete = false
 
-        readdirp(xtend(READDIRP_OPTS, opts.readdirp, {root: filename}))
+        readdirp(filename, xtend(READDIRP_OPTS, opts.readdirp))
           .on('data', function (entry) {
             total++
 
